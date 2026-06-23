@@ -1,0 +1,65 @@
+/* Shared doctor list styles - now using User.css variables */
+.doctorList-1 {
+  display: flex;
+  background: white;
+  border-radius: 14px;
+  padding: 16px;
+  margin-bottom: 14px;
+  border: 1px solid #e8eef5;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  gap: 16px;
+  transition: all 0.2s;
+}
+.doctorList-1:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(15,76,129,0.1);
+}
+.doctorList-1-left {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  min-width: 80px;
+}
+.doctorList-1-left-img img {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #e8eef5;
+}
+.doctorList-1-left-book-appointment {
+  background: linear-gradient(135deg, #0f4c81, #1a6bb5);
+  color: white;
+  padding: 6px 14px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  text-align: center;
+  transition: opacity 0.2s;
+}
+.doctorList-1-left-book-appointment:hover { opacity: 0.85; }
+.doctorList-1-right { flex: 1; }
+.doctorList-1-right-heading {
+  font-size: 16px;
+  font-weight: 800;
+  color: #1a1a2e;
+  margin-bottom: 4px;
+}
+.doctorList-1-right-speciality {
+  font-size: 13px;
+  color: #0f4c81;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+.doctorList-1-right-experience,
+.doctorList-1-right-fees,
+.doctorList-1-right-available-time {
+  display: flex;
+  font-size: 13px;
+  margin-bottom: 4px;
+  color: #374151;
+}
+.heading-doctor { color: #6b7280; margin-right: 4px; }
+.answer-doctor { font-weight: 600; color: #1a1a2e; }

@@ -1,0 +1,156 @@
+.user-table {
+  border-collapse: collapse;
+  width: 100%;
+  font-family: 'Inter', 'Segoe UI', sans-serif;
+}
+
+.user-table th {
+  padding: 12px 16px;
+  text-align: left;
+  font-size: 12px;
+  font-weight: 700;
+  color: #6b7280;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  border-bottom: 1px solid #e8eef5;
+  background: #f8fafc;
+}
+
+.user-table td {
+  padding: 14px 16px;
+  font-size: 14px;
+  color: #374151;
+  border-bottom: 1px solid #f0f5fb;
+}
+
+.user-table tbody tr:hover {
+  background: #f8fafc;
+}
+
+.profile-pic {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.patient-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #0f4c81, #00c9a7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: 700;
+  font-size: 13px;
+  flex-shrink: 0;
+}
+
+.patient-name-cell {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+}
+
+.patient-name {
+  font-weight: 600;
+  color: #1a1a2e;
+  font-size: 14px;
+}
+
+.status-badge {
+  font-size: 12px;
+  font-weight: 700;
+  padding: 4px 12px;
+  border-radius: 20px;
+  display: inline-block;
+}
+
+.status-pending {
+  background: #fef9c3;
+  color: #ca8a04;
+}
+
+.status-confirmed {
+  background: #dcfce7;
+  color: #16a34a;
+}
+
+.status-cancelled {
+  background: #fee2e2;
+  color: #dc2626;
+}
+
+.status-completed {
+  background: #dbeafe;
+  color: #1d4ed8;
+}
+
+.action-btn {
+  padding: 6px 14px;
+  border-radius: 8px;
+  border: none;
+  font-weight: 600;
+  font-size: 12px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  transition: opacity 0.2s;
+}
+
+.action-btn:hover {
+  opacity: 0.85;
+}
+
+.action-btn-status {
+  background: linear-gradient(135deg, #0f4c81, #1a6bb5);
+  color: white;
+}
+
+.action-btn-chat {
+  background: linear-gradient(135deg, #00c9a7, #00a88b);
+  color: white;
+}
+
+.action-buttons {
+  display: flex;
+  gap: 8px;
+}
+
+.no-patients {
+  text-align: center;
+  padding: 48px;
+}
+
+.no-patients-icon {
+  font-size: 48px;
+  margin-bottom: 12px;
+}
+
+.no-patients-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: #1a1a2e;
+  margin-bottom: 8px;
+}
+
+.no-patients-sub {
+  color: #6b7280;
+  font-size: 14px;
+}
+
+.loading-state {
+  text-align: center;
+  padding: 40px;
+  color: #6b7280;
+}
+
+.loading-icon {
+  font-size: 28px;
+  margin-bottom: 12px;
+  display: block;
+}
