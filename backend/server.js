@@ -5,7 +5,6 @@ dotenv.config();
 import { createServer } from "http";
 import { Server } from "socket.io";
 import connectDb from "./config/configDB.js";
-import morgan from "morgan";
 import userRoutes from "./routes/userRoutes.js";
 import doctorRoutes from "./routes/doctorRoutes.js";
 import appointmentRoute from "./routes/appointmentRoutes.js";
