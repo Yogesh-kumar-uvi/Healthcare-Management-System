@@ -1,7 +1,6 @@
 import React, { useState } from 'react'
 import axios from 'axios'
 import { useDispatch, useSelector } from "react-redux";
-import { useNavigate } from 'react-router-dom';
 import { setDoctor } from "../../Redux/DoctorSlice";
 import { message } from 'antd';
 import ProfilePhotoUpload from "../ProfilePhoto/ProfilePhotoUpload";
@@ -10,7 +9,6 @@ import { API_URL } from '../../config';
 import './DoctorProfile.css'
 
 const DoctorProfile = () => {
-    const navigate = useNavigate();
     const dispatch = useDispatch();
     const [edite, setEdite] = useState(false);
     const [saving, setSaving] = useState(false); // ✅ NEW

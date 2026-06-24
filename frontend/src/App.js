@@ -9,10 +9,8 @@ import MyProfile from "./components/Profile/MyProfile"; // ✅ NEW import
 import { useSelector } from "react-redux";
 import Spinner from "./components/Spinner.js";
 import ProtectedRoute from "./components/ProtectedRoutes/ProtectedRoutes.jsx";
-import DoctorRegistration from "./pages/Doctor/DoctorRegistration.js";
 import ProtectedDoctorRoute from "./components/ProtectedRoutes/ProtectedDoctorRoutes.jsx";
 import Doctor from "./pages/Doctor/Doctor.js";
-import DoctorProfile from "./components/doctor/DoctorProfile.jsx";
 import Conversation from "./components/conversation/Conversation.js";
 
 function App() {
