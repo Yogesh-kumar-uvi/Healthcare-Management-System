@@ -391,3 +391,288 @@ body {
 .footer-copy {
   color: rgba(255,255,255,0.4);
 }
+
+/* ════════════════════════════════════════════════════════════
+   RESPONSIVE — mobile / tablet
+   Only visual/layout rules added below. No JS/functionality touched.
+   ════════════════════════════════════════════════════════════ */
+
+html, body {
+  overflow-x: hidden;
+}
+
+.landing-page {
+  overflow-x: hidden;
+  width: 100%;
+}
+
+/* ── Tablet (≤1024px) ─────────────────────────────────────── */
+@media (max-width: 1024px) {
+  .landing-topbar {
+    padding: 16px 28px;
+  }
+
+  .landing-hero {
+    padding: 110px 28px 50px;
+    gap: 36px;
+  }
+
+  .hero-title {
+    font-size: 42px;
+  }
+
+  .landing-stats {
+    padding: 22px 28px;
+    gap: 28px;
+  }
+
+  .landing-footer {
+    padding: 40px 28px 0;
+  }
+}
+
+/* ── Small tablet / large mobile (≤900px) ────────────────── */
+@media (max-width: 900px) {
+  .landing-hero {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: 130px 24px 40px;
+    gap: 32px;
+  }
+
+  .hero-left {
+    max-width: 100%;
+  }
+
+  .hero-badge {
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .hero-features {
+    align-items: flex-start;
+    text-align: left;
+    max-width: 420px;
+    margin: 0 auto;
+  }
+
+  .hero-right {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+  }
+
+  .auth-card {
+    width: 100%;
+    max-width: 420px;
+  }
+}
+
+/* ── Mobile (≤600px) ──────────────────────────────────────── */
+@media (max-width: 600px) {
+  .landing-topbar {
+    padding: 12px 16px;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .landing-logo {
+    font-size: 16px;
+    gap: 8px;
+  }
+
+  .landing-logo img {
+    width: 32px;
+    height: 32px;
+  }
+
+  .landing-logo span small {
+    font-size: 11px !important;
+  }
+
+  /* Decorative nav links (no click behavior) hidden on mobile to prevent overflow */
+  .landing-topbar-links span:not(.emergency-badge) {
+    display: none;
+  }
+
+  .landing-topbar-links {
+    gap: 0;
+  }
+
+  .emergency-badge {
+    font-size: 11px !important;
+    padding: 5px 10px !important;
+  }
+
+  .landing-hero {
+    padding: 100px 16px 32px;
+    gap: 28px;
+  }
+
+  .hero-badge {
+    font-size: 12px;
+    padding: 7px 14px;
+  }
+
+  .hero-title {
+    font-size: 30px;
+    letter-spacing: -0.5px;
+  }
+
+  .hero-subtitle {
+    font-size: 14.5px;
+    margin-bottom: 24px;
+  }
+
+  .hero-feature-item {
+    font-size: 13.5px;
+  }
+
+  .hero-feature-item i {
+    width: 28px;
+    height: 28px;
+    font-size: 12px;
+  }
+
+  .auth-card {
+    width: 100%;
+    max-width: 100%;
+    padding: 28px 20px;
+    border-radius: 18px;
+  }
+
+  .auth-card-title {
+    font-size: 19px;
+  }
+
+  .auth-btn {
+    padding: 12px 14px;
+    font-size: 14px;
+  }
+
+  .auth-btn i {
+    width: 32px;
+    height: 32px;
+    font-size: 14px;
+  }
+
+  .landing-stats {
+    flex-wrap: wrap;
+    gap: 18px;
+    padding: 20px 16px;
+  }
+
+  .stat-item {
+    flex: 1 1 40%;
+  }
+
+  .stat-number {
+    font-size: 22px;
+  }
+
+  .stat-label {
+    font-size: 11.5px;
+  }
+
+  .landing-footer {
+    padding: 32px 16px 0;
+  }
+
+  .footer-inner {
+    gap: 28px;
+  }
+
+  .footer-brand {
+    max-width: 100%;
+  }
+
+  .footer-links {
+    gap: 28px;
+    width: 100%;
+  }
+
+  .footer-col {
+    min-width: 42%;
+  }
+
+  .footer-bottom {
+    flex-direction: column;
+    align-items: flex-start;
+    text-align: left;
+  }
+}
+
+/* ── Extra small mobile (≤375px) ─────────────────────────── */
+@media (max-width: 375px) {
+  .landing-topbar {
+    padding: 10px 12px;
+  }
+
+  .landing-logo {
+    font-size: 14px;
+  }
+
+  .hero-title {
+    font-size: 26px;
+  }
+
+  .hero-subtitle {
+    font-size: 13.5px;
+  }
+
+  .auth-card {
+    padding: 24px 16px;
+  }
+
+  .auth-btn {
+    padding: 11px 12px;
+    gap: 10px;
+  }
+
+  .stat-item {
+    flex: 1 1 100%;
+  }
+}
+
+/* ── Smallest mobile (≤320px) ─────────────────────────────── */
+@media (max-width: 320px) {
+  .landing-topbar {
+    padding: 8px 10px;
+  }
+
+  .landing-logo img {
+    width: 28px;
+    height: 28px;
+  }
+
+  .landing-logo {
+    font-size: 13px;
+  }
+
+  .hero-title {
+    font-size: 23px;
+  }
+
+  .hero-badge {
+    font-size: 11px;
+    padding: 6px 12px;
+  }
+
+  .hero-feature-item {
+    font-size: 12.5px;
+  }
+
+  .auth-card {
+    padding: 20px 14px;
+  }
+
+  .auth-card-title {
+    font-size: 17px;
+  }
+
+  .auth-btn {
+    font-size: 13px;
+    padding: 10px 10px;
+  }
+}

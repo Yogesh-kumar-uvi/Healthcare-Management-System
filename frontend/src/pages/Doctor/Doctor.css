@@ -314,4 +314,100 @@
   .doc-main { margin-left: 0; }
   .doc-action-grid { grid-template-columns: repeat(2,1fr); }
   .doc-content { padding: 20px 16px; }
+  /* FIX: hamburger button was never shown on mobile (inline display:none never overridden) */
+  .mobile-toggle { display: flex !important; }
+}
+
+/* ── Mobile (≤600px) ──────────────────────────────────────── */
+@media (max-width: 600px) {
+  .doc-topbar {
+    padding: 12px 16px;
+  }
+
+  .doc-topbar-title {
+    font-size: 17px;
+  }
+
+  .doc-content {
+    padding: 16px 12px;
+  }
+
+  .doc-card, .doc-action-card {
+    padding: 16px;
+  }
+
+  .doc-stat-card {
+    padding: 14px;
+    gap: 12px;
+  }
+
+  .doc-stat-icon {
+    width: 40px; height: 40px;
+    font-size: 17px;
+  }
+
+  .doc-stat-val {
+    font-size: 20px;
+  }
+}
+
+/* ── Extra small (≤480px) ─────────────────────────────────── */
+@media (max-width: 480px) {
+  .doc-topbar-title {
+    font-size: 15px;
+  }
+
+  /* Hide doctor name text next to avatar in topbar to save space on tiny screens */
+  .doc-topbar > div > div > span {
+    display: none;
+  }
+
+  .doc-action-grid {
+    grid-template-columns: repeat(2,1fr);
+    gap: 10px;
+  }
+
+  .doc-action-card {
+    padding: 14px 10px;
+  }
+
+  .doc-action-icon {
+    width: 42px; height: 42px;
+    font-size: 18px;
+  }
+
+  .doc-action-label {
+    font-size: 12.5px;
+  }
+
+  .mobile-toggle {
+    width: 46px !important;
+    height: 46px !important;
+    bottom: 16px !important;
+    right: 16px !important;
+    font-size: 17px !important;
+  }
+}
+
+/* ── Smallest mobile (≤375px) ─────────────────────────────── */
+@media (max-width: 375px) {
+  .doc-topbar {
+    padding: 10px 12px;
+  }
+
+  .doc-content {
+    padding: 14px 10px;
+  }
+
+  .doc-sidebar-brand {
+    padding: 16px 12px;
+  }
+
+  .doc-nav-item {
+    font-size: 13px;
+  }
+
+  .doc-stat-grid {
+    grid-template-columns: 1fr;
+  }
 }

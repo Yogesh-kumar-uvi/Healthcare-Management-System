@@ -237,3 +237,24 @@
         padding: 32px 28px;
     }
 }
+
+@media (max-width: 480px) {
+    .left {
+        padding: 22px 18px;
+    }
+    .right {
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 20px 18px;
+        gap: 16px;
+    }
+    .fees-display {
+        font-size: 26px;
+    }
+    .edit-btn {
+        width: 100%;
+    }
+    .left .answer input {
+        max-width: 100%;
+    }
+}

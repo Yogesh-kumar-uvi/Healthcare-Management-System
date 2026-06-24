@@ -5,7 +5,7 @@ import UserHome from "./components/Home/Home";
 import Notification from "./components/Notification/Notification";
 import Appointments from "./components/Appointments/Appointments";
 import MyPrescriptions from "./components/Prescription/MyPrescriptions";
-import MyProfile from "./components/Profile/MyProfile"; // ✅ NEW import
+import MyProfile from "./components/Profile/MyProfile"; 
 import { useSelector } from "react-redux";
 import Spinner from "./components/Spinner.js";
 import ProtectedRoute from "./components/ProtectedRoutes/ProtectedRoutes.jsx";
@@ -22,7 +22,6 @@ function App() {
           <Spinner />
         ) : (
           <Routes>
-            {/* <Route exact path="/" element={<DoctorRegistration />} /> */}
             <Route exact path="/" element={<Home />} />
 
             <Route
