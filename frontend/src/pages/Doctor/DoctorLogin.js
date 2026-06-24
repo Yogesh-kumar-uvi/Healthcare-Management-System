@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import { Button, Form } from "react-bootstrap";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
+import { API_URL } from '../../config'
 import { setDoctor } from "../../Redux/DoctorSlice";
 
 const DoctorLogin = () => {
@@ -13,8 +14,8 @@ const DoctorLogin = () => {
     email: "",
     password: "",
   });
-  const [errors, setErrors] = useState({}); // ✅ NEW
-  const [submitting, setSubmitting] = useState(false); // ✅ NEW
+  const [errors, setErrors] = useState({}); 
+  const [submitting, setSubmitting] = useState(false); 
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -36,23 +37,23 @@ const DoctorLogin = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // ✅ NEW — empty form submit hone se roko
+    
     const validationErrors = validate();
     if (Object.keys(validationErrors).length > 0) {
       setErrors(validationErrors);
       return;
     }
 
-    setSubmitting(true); // ✅ NEW
+    setSubmitting(true); 
     try {
       const res = await axios.post(
-        "http://localhost:8080/doctor/api/v1/login",
+        `${API_URL}/doctor/api/v1/login`,
         formData
       );
       if (res.data.success) {
         localStorage.setItem("token", res.data.token);
         const res2 = await axios.post(
-          "http://localhost:8080/doctor/api/v1/getDoctor",
+          `${API_URL}/doctor/api/v1/getDoctor`,
           { token: localStorage.getItem("token") },
           {
             headers: {
@@ -66,16 +67,16 @@ const DoctorLogin = () => {
         message.success("Login Successfully");
         navigate("/Doctor");
       } else {
-        // ✅ FIX — backend ka actual message dikhao
+        
         message.error(res.data.message || "Enter correct credentials");
       }
     } catch (error) {
-      console.error("Doctor login error:", error); // ✅ FIX — context ke saath log
-      // ✅ FIX — specific backend error dikhao (jaise "No account is associated with this email" ya "Password doesn't match")
+      console.error("Doctor login error:", error);
+      
       const errMsg = error.response?.data?.message || "Something went wrong. Please try again.";
       message.error(errMsg);
     } finally {
-      setSubmitting(false); // ✅ NEW
+      setSubmitting(false); 
     }
   };
 
@@ -90,9 +91,9 @@ const DoctorLogin = () => {
             placeholder="Enter email"
             value={formData.email}
             onChange={handleChange}
-            isInvalid={!!errors.email} // ✅ NEW
+            isInvalid={!!errors.email} 
           />
-          {errors.email && ( // ✅ NEW
+          {errors.email && (
             <div style={{ color: "#dc2626", fontSize: 12, marginTop: 4 }}>
               ⚠️ {errors.email}
             </div>
@@ -110,9 +111,9 @@ const DoctorLogin = () => {
             placeholder="Password"
             value={formData.password}
             onChange={handleChange}
-            isInvalid={!!errors.password} // ✅ NEW
+            isInvalid={!!errors.password} 
           />
-          {errors.password && ( // ✅ NEW
+          {errors.password && ( 
             <div style={{ color: "#dc2626", fontSize: 12, marginTop: 4 }}>
               ⚠️ {errors.password}
             </div>

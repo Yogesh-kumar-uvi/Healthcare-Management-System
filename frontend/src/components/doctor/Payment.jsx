@@ -2,6 +2,7 @@ import axios from 'axios'
 import React, { useEffect, useState } from 'react'
 import { useSelector } from "react-redux";
 import { message } from "antd"; // ✅ NEW import
+import { API_URL } from '../../config';
 
 const Payment = () => {
   const [paymentLista, setPaymentList] = useState([]);
@@ -10,7 +11,7 @@ const Payment = () => {
 
   const paymentListFunction = async () => {
     try {
-      const paymentList = await axios.get(`http://localhost:8080/appointment/api/v1/get-payment-list/${doctor._id}`)
+      const paymentList = await axios.get(`${API_URL}/appointment/api/v1/get-payment-list/${doctor._id}`)
       if (paymentList.status === 200 && paymentList.data.data) {
         setPaymentList(paymentList.data.data.reverse());
       }

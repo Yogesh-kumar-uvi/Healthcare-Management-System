@@ -11,6 +11,7 @@ import NurseList from "../../components/doctor/nurseList/nurseList.jsx";
 import PharmacistList from "../../components/doctor/pharmacistList/PharmacistList.jsx";
 import Department from "../../components/doctor/department/Department.jsx";
 import Payment from "../../components/doctor/Payment.jsx";
+import { API_URL } from '../../config'
 import axios from "axios";
 
 const navItems = [
@@ -45,7 +46,7 @@ const Doctor = () => {
 
   const logOutFunction = async () => {
     try {
-      await axios.put(`http://localhost:8080/doctor/api/v1/offline-doctor/${doctor._id}`);
+      await axios.put(`${API_URL}/doctor/api/v1/offline-doctor/${doctor._id}`);
     } catch (e) {
       console.error("Failed to set doctor offline:", e);
     }
@@ -65,7 +66,7 @@ const Doctor = () => {
     return found ? found.label : "Dashboard";
   };
 
-  // ✅ NEW — Avatar render karne ka reusable function (photo ho to photo, warna initials)
+ 
   const renderAvatar = (size = 40) => {
     if (doctor?.profilePhoto) {
       return (

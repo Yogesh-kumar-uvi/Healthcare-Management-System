@@ -6,6 +6,7 @@ import { add } from "../../Redux/TokenSllice";
 import { useDispatch, useSelector } from "react-redux";
 import { showLoading, hideLoading } from "../../Redux/AlertSlice";
 import { message } from "antd";
+import { API_URL } from '../../config'
 import { setUser } from "../../Redux/UserSlice";
 
 const Login = () => {
@@ -15,8 +16,8 @@ const Login = () => {
     email: "",
     password: "",
   });
-  const [errors, setErrors] = useState({}); // ✅ NEW
-  const [submitting, setSubmitting] = useState(false); // ✅ NEW
+  const [errors, setErrors] = useState({}); 
+  const [submitting, setSubmitting] = useState(false); 
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -24,7 +25,7 @@ const Login = () => {
       ...prevState,
       [name]: value,
     }));
-    if (errors[name]) setErrors((prev) => ({ ...prev, [name]: "" })); // ✅ NEW
+    if (errors[name]) setErrors((prev) => ({ ...prev, [name]: "" }));
   };
 
   // ✅ NEW — basic validation
@@ -38,18 +39,18 @@ const Login = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // ✅ NEW — empty form submit hone se roko
+    
     const validationErrors = validate();
     if (Object.keys(validationErrors).length > 0) {
       setErrors(validationErrors);
       return;
     }
 
-    setSubmitting(true); // ✅ NEW
+    setSubmitting(true); 
     try {
       dispatch(showLoading());
       const res = await axios.post(
-        "http://localhost:8080/user/api/v1/login",
+        `${API_URL}/user/api/v1/login`,
         formData
       );
       dispatch(hideLoading());
@@ -57,7 +58,7 @@ const Login = () => {
       if (res.data.success) {
         localStorage.setItem("token", res.data.token);
         const res2 = await axios.post(
-          "http://localhost:8080/user/api/v1/getUserData",
+          `${API_URL}/user/api/v1/getUserData`,
           { token: localStorage.getItem("token") },
           {
             headers: {
@@ -71,17 +72,16 @@ const Login = () => {
         message.success("Login Successfully");
         navigate("/User");
       } else {
-        // ✅ FIX — backend ka actual message dikhao, generic "Credentials not matched" nahi
+        
         message.error(res.data.message || "Credentials not matched");
       }
     } catch (error) {
       dispatch(hideLoading());
-      console.error("Login error:", error); // ✅ FIX — context ke saath log
-      // ✅ FIX — backend se aaya specific error dikhao (jaise "user not found" ya "Invalid Email and password")
+      console.error("Login error:", error); 
       const errMsg = error.response?.data?.message || "Something went wrong. Please try again.";
       message.error(errMsg);
     } finally {
-      setSubmitting(false); // ✅ NEW
+      setSubmitting(false);
     }
   };
 
@@ -96,9 +96,9 @@ const Login = () => {
             placeholder="Enter email"
             value={formData.email}
             onChange={handleChange}
-            isInvalid={!!errors.email} // ✅ NEW
+            isInvalid={!!errors.email} 
           />
-          {errors.email && ( // ✅ NEW
+          {errors.email && (
             <div style={{ color: "#dc2626", fontSize: 12, marginTop: 4 }}>
               ⚠️ {errors.email}
             </div>
@@ -116,9 +116,9 @@ const Login = () => {
             placeholder="Password"
             value={formData.password}
             onChange={handleChange}
-            isInvalid={!!errors.password} // ✅ NEW
+            isInvalid={!!errors.password} 
           />
-          {errors.password && ( // ✅ NEW
+          {errors.password && ( 
             <div style={{ color: "#dc2626", fontSize: 12, marginTop: 4 }}>
               ⚠️ {errors.password}
             </div>

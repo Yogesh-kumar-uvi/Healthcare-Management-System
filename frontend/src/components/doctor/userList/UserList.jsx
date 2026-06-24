@@ -6,6 +6,7 @@ import { useNavigate } from 'react-router-dom';
 import { Modal } from "react-bootstrap";
 import StatusUpdate from './StatusUpdate';
 import ChatPage from './ChatPage';
+import { API_URL } from '../../../config';
 import PrescriptionModal from '../../Prescription/PrescriptionModal'; // ✅ NEW import
 
 const UserList = () => {
@@ -43,7 +44,7 @@ const UserList = () => {
   useEffect(() => {
     const userList = async () => {
       try {
-        const response = await axios.get(`http://localhost:8080/doctor/api/v1/doctorAppointments/${doctor._id}`);
+        const response = await axios.get(`${API_URL}/doctor/api/v1/doctorAppointments/${doctor._id}`);
         if (response.data.success) setUsers(response.data.data.reverse());
       } catch (error) {
         console.error("Error fetching patients:", error);

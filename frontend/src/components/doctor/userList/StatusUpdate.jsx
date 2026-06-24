@@ -1,6 +1,7 @@
 import { message } from 'antd';
 import axios from 'axios';
-import React, { useState } from 'react'
+import React, { useState } from 'react';
+import { API_URL } from '../../../config';
 
 const StatusUpdate = (props) => {
   const [status, setStatus] = useState();
@@ -15,17 +16,17 @@ const StatusUpdate = (props) => {
     try {
       let response;
       if (option === "approve") {
-        response = await axios.put(`http://localhost:8080/doctor/api/v1/approval`, formData);
+        response = await axios.put(`${API_URL}/doctor/api/v1/approval`, formData);
         if (response.data.success) { message.success("Appointment Approved!"); setStatus("Confirmed"); }
       } else if (option === "cancel") {
-        response = await axios.put(`http://localhost:8080/doctor/api/v1/cancel`, formData);
+        response = await axios.put(`${API_URL}/doctor/api/v1/cancel`, formData);
         if (response.data.success) { message.success("Appointment Cancelled!"); setStatus("Cancelled"); }
       } else {
-        response = await axios.put(`http://localhost:8080/doctor/api/v1/complete`, formData);
+        response = await axios.put(`${API_URL}/doctor/api/v1/complete`, formData);
         if (response.data.success) { message.success("Appointment Completed!"); setStatus("Completed"); }
       }
     } catch (error) {
-      console.error("Status update error:", error); // ✅ FIX — log add kiya
+      console.error("Status update error:", error); 
       // ✅ FIX — backend ka specific error dikhao
       message.error(error.response?.data?.message || "Failed to update status. Please try again.");
     } finally {

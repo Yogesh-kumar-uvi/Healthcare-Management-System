@@ -3,6 +3,7 @@ import { Form, Button, Modal } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { message } from "antd";
+import { API_URL } from '../../config'
 import { useDispatch } from "react-redux";
 import { setUser } from "../../Redux/UserSlice";
 import { hideLoading, showLoading } from "../../Redux/AlertSlice";
@@ -23,7 +24,7 @@ const Register = () => {
   const handleChange = (e) => {
     const { name, value } = e.target;
 
-    // ✅ FIX — phone field mein sirf numbers allow karo
+   
     if (name === "phone") {
       const numericValue = value.replace(/[^0-9]/g, "");
       setFormData((prevState) => ({
@@ -73,21 +74,19 @@ const Register = () => {
 
     try {
       const response = await axios.post(
-        "http://localhost:8080/user/api/v1/register",
-        formData
+        `${API_URL}/user/api/v1/register`,formData
       );
       if (response.status === 200) {
         setShowModal(true);
         dispatch(showLoading());
         const res = await axios.post(
-          "http://localhost:8080/user/api/v1/login",
-          formData
+      `${API_URL}/user/api/v1/login`,formData
         );
         dispatch(hideLoading());
         if (res.data.success) {
           localStorage.setItem("token", res.data.token);
           const res2 = await axios.post(
-            "http://localhost:8080/user/api/v1/getUserData",
+            `${API_URL}/user/api/v1/getUserData`,
             { token: localStorage.getItem("token") },
             {
               headers: {

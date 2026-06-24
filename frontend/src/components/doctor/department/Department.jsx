@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react'
 import '../userList/UserList.css'
 import axios from 'axios';
-import { message } from "antd"; // ✅ NEW import
+import { message } from "antd";
+import { API_URL } from '../../../config';
 import DoctorModal from './DoctorModal';
 import { Modal } from 'react-bootstrap';
 
@@ -9,17 +10,17 @@ const Department = () => {
   const [users, setUsers] = useState([]);
   const [selectedDoctor, setSelectedDoctor] = useState(null);
   const [modalOpen, setModelOpen] = useState(false);
-  const [loading, setLoading] = useState(true); // ✅ NEW
+  const [loading, setLoading] = useState(true); 
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        // ✅ FIX — 8081 → 8080 (galat port tha)
-        const response = await axios.get('http://localhost:8080/user/api/v1/getAllDoctors');
+        
+        const response = await axios.get(`${API_URL}/user/api/v1/getAllDoctors`)
         setUsers(response.data.data);
       } catch (error) {
         console.error('Error fetching data:', error);
-        message.error("Failed to load doctors list."); // ✅ FIX — user ko bataya
+        message.error("Failed to load doctors list."); 
       } finally {
         setLoading(false); // ✅ NEW
       }

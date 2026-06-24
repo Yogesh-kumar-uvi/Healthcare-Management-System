@@ -2,7 +2,8 @@ import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { message } from "antd"; // ✅ NEW import
+import { message } from "antd"; 
+import { API_URL } from "../../config";
 import ChatPage from "./ChatPage";
 import "../../styles/User.css";
 
@@ -19,7 +20,7 @@ const Conversation = () => {
     const conversationList = async () => {
       try {
         const response = await axios.get(
-          `http://localhost:8080/user/api/v1/getUniqueAppointments/${user.id}`
+          `${API_URL}/user/api/v1/getUniqueAppointments/${user.id}`
         );
         if (response.data.success) setChatList(response.data.data);
       } catch (error) {

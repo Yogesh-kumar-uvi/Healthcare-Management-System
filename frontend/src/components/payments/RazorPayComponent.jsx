@@ -1,4 +1,5 @@
-import React, { useEffect } from 'react' // ✅ FIX — useEffect import missing tha
+import React, { useEffect } from 'react' 
+import { API_URL } from '../../config'
 
 const RazorPayComponent = () => {
 
@@ -28,10 +29,10 @@ const RazorPayComponent = () => {
             "description": "Test Transaction",
             "image": "https://www.healthcare-management-degree.net/wp-content/uploads/2016/09/cropped-healthcare-mgmt512.png",
             "order_id": "order_Nz0y7TyPfcBXBg",
-            "callback_url": "http://localhost:8080/appointment/api/v1/verify-order", // ✅ FIX — 8081 jaisa typo agar hota to bhi check kiya, 8080 hi sahi hai
+            "callback_url": `${API_URL}/appointment/api/v1/verify-order`, 
             "prefill": {
-                "name": "Gaurav Kumar",
-                "email": "gaurav.kumar@example.com",
+                "name": "Yogesh Kumar",
+                "email": "yogesh.kumar@example.com",
                 "contact": "9000090000"
             },
             "notes": {

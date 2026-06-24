@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import { setDoctor } from "../../Redux/DoctorSlice";
 import { message } from 'antd';
 import ProfilePhotoUpload from "../ProfilePhoto/ProfilePhotoUpload";
+import { API_URL } from '../../config';
 
 import './DoctorProfile.css'
 
@@ -38,19 +39,18 @@ const DoctorProfile = () => {
     const save = async () => {
         setSaving(true); // ✅ NEW
         try { // ✅ FIX — try-catch missing tha pehle
-            const res = await axios.put('http://localhost:8080/doctor/api/v1/', formData);
+            const res = await axios.put(`${API_URL}/doctor/api/v1/`, formData);
             if (res.status === 200) {
                 dispatch(setDoctor(res.data.data));
                 message.success("Updated Successfully");
-                setEdite(false); // ✅ FIX — navigate("/") hata diya, ye logout jaisa effect deta tha
-            } else {
+                setEdite(false); 
                 message.error("Try again");
             }
         } catch (error) {
-            console.error("Profile update error:", error); // ✅ NEW
+            console.error("Profile update error:", error);
             message.error(error.response?.data?.message || "Failed to update profile. Please try again."); // ✅ NEW
         } finally {
-            setSaving(false); // ✅ NEW
+            setSaving(false); 
         }
     }
 

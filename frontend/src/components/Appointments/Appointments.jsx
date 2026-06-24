@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom'
 import axios from 'axios'
 import { Modal } from 'react-bootstrap'
 import { message } from 'antd'
+import { API_URL } from '../../config' // ✅ NEW import
 import '../../styles/User.css'
 
 const Appointments = () => {
@@ -17,17 +18,16 @@ const Appointments = () => {
   const getAppointment = async () => {
     if (!user) { navigate("/"); return; }
     try {
-      const res = await axios.get(`http://localhost:8080/user/api/v1/getAllAppointments/${user.id}`);
+      const res = await axios.get(`${API_URL}/user/api/v1/getAllAppointments/${user.id}`); // ✅ FIX
       if (res.data.success && res.data.data) setDocto(res.data.data.reverse());
-      // ✅ FIX — "No appointment found" normal case hai, error nahi dikhana chahiye
     } catch (e) {
-      console.error("Error fetching appointments:", e); // ✅ FIX — log add kiya
-      message.error("Failed to load appointments. Please refresh."); // ✅ FIX — clearer message
+      console.error("Error fetching appointments:", e);
+      message.error("Failed to load appointments. Please refresh.");
     }
     finally { setLoading(false) }
   }
 
-  useEffect(() => { getAppointment() }, [user]) // ✅ FIX — dependency array mein user add kiya
+  useEffect(() => { getAppointment() }, [user])
 
   const statusClass = (s) => {
     if (!s) return 'status-pill status-pending';
@@ -39,7 +39,6 @@ const Appointments = () => {
 
   return (
     <>
-      {/* Header */}
       <div style={{ marginBottom: 24 }}>
         <div style={{ fontSize: 13, color: '#6b7280' }}>Total: {docto.length} appointment(s)</div>
       </div>
@@ -114,7 +113,6 @@ const Appointments = () => {
         )}
       </div>
 
-      {/* Detail Modal */}
       <Modal show={show} onHide={() => setShow(false)} centered>
         <Modal.Header closeButton style={{ background: 'linear-gradient(135deg,#0f4c81,#1a6bb5)', color: 'white' }}>
           <Modal.Title>Appointment Details</Modal.Title>

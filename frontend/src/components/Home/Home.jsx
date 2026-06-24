@@ -4,6 +4,7 @@ import axios from 'axios'
 import { message } from 'antd'
 import { Modal } from 'react-bootstrap'
 import { useNavigate } from 'react-router-dom'
+import { API_URL } from '../../config'
 import '../../styles/User.css'
 
 const Home = () => {
@@ -16,7 +17,7 @@ const Home = () => {
 
   const dataGetter = async () => {
     try {
-      const resp = await axios.get("http://localhost:8080/user/api/v1/getAllDoctors")
+      const resp = await axios.get(`${API_URL}/user/api/v1/getAllDoctors`)
       if (resp.data.success) setDoctor(resp.data.data)
     } catch (error) {
       message.error("Failed to load doctors")
@@ -36,7 +37,7 @@ const Home = () => {
   const createAppointment = async (item) => {
     const time = `${item.availableTimings.day1} ${item.availableTimings.time1}  ${item.availableTimings.day2} ${item.availableTimings.time2}`
     try {
-      const resp = await axios.post("http://localhost:8080/appointment/api/v1/", {
+      const resp = await axios.post(`${API_URL}/appointment/api/v1/`, {
         userID: user.id, doctorID: item._id, timing: time
       })
       if (resp.data.success) {
@@ -46,25 +47,24 @@ const Home = () => {
     } catch (error) { message.error("Appointment failed") }
   }
 
-  // ✅ NEW — phone number ko clean + format karne ka helper
+
   const formatPhoneForRazorpay = (phone) => {
     if (!phone) return "";
-    // sirf digits rakho (kisi bhi space, dash, + ko hata do)
     const digitsOnly = String(phone).replace(/\D/g, "");
-    // agar already 91 se start hota hai 12 digit ka, to as-is
+
     if (digitsOnly.length === 12 && digitsOnly.startsWith("91")) {
       return `+${digitsOnly}`;
     }
-    // agar 10 digit ka normal Indian number hai, +91 add karo
+    
     if (digitsOnly.length === 10) {
       return `+91${digitsOnly}`;
     }
-    // fallback — jo bhi hai usi ke aage +91 laga do
+   
     return `+91${digitsOnly}`;
   };
 
   const openRazorpay = async (doctdetail) => {
-    const order = await axios.post('http://localhost:8080/appointment/api/v1/create-order', {
+    const order = await axios.post(`${API_URL}/appointment/api/v1/create-order`, {
       userId: user.id, doctorId: doctdetail._id, amount: doctdetail.fees
     });
     if (!order.data.success) { alert("Order failed!"); return; }
@@ -77,7 +77,7 @@ const Home = () => {
       image: 'https://www.healthcare-management-degree.net/wp-content/uploads/2016/09/cropped-healthcare-mgmt512.png',
       order_id: order.data.data.id,
       handler: async function (response) {
-        const orderResult = await axios.post('http://localhost:8080/appointment/api/v1/verify-order', {
+        const orderResult = await axios.post(`${API_URL}/appointment/api/v1/verify-order`, {
           razorpay_payment_id: response.razorpay_payment_id,
           razorpay_order_id: response.razorpay_order_id,
           razorpay_signature: response.razorpay_signature
@@ -87,7 +87,7 @@ const Home = () => {
       prefill: {
         name: user.name,
         email: user.email,
-        contact: formatPhoneForRazorpay(user.phone) // ✅ FIX — country code ke saath
+        contact: formatPhoneForRazorpay(user.phone) 
       },
       theme: { color: '#0f4c81' },
     };

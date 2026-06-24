@@ -2,6 +2,7 @@ import axios from 'axios'
 import React, { useEffect, useState } from 'react'
 import { useSelector } from "react-redux";
 import { message } from "antd";
+import { API_URL } from '../../config'
 import '../../styles/User.css';
 
 const Notification = () => {
@@ -11,30 +12,30 @@ const Notification = () => {
 
   const callingNotificationAPI = async () => {
     try {
-      // ✅ FIX — 8081 → 8080 (galat port tha)
-      const res = await axios.get(`http://localhost:8080/notification/api/v1/${user.id}`)
+      
+      const res = await axios.get(`${API_URL}/notification/api/v1/${user.id}`)
       if (res.status === 200) setNotificationL(res.data.data.reverse());
     } catch (error) {
-      console.error("Notification fetch error:", error); // ✅ FIX — log add kiya
-      message.error("Failed to load notifications."); // ✅ FIX — user ko bataya
+      console.error("Notification fetch error:", error); 
+      message.error("Failed to load notifications."); 
     }
     finally { setLoading(false) }
   }
 
-  useEffect(() => { callingNotificationAPI(); }, [user]) // ✅ FIX — dependency array mein user add kiya
+  useEffect(() => { callingNotificationAPI(); }, [user]) 
 
   const msgSeen = async (notif) => {
     if (notif.seen) { message.info("Already marked as seen"); return; }
     try {
-      // ✅ FIX — 8081 → 8080
-      const res = await axios.put(`http://localhost:8080/notification/api/v1/`, { notificationID: notif._id })
+      
+      const res = await axios.put(`${API_URL}/notification/api/v1/`, { notificationID: notif._id })
       if (res.status === 200) {
         message.success("Marked as seen");
         setNotificationL(prev => prev.map(n => n._id === notif._id ? { ...n, seen: true } : n));
       }
     } catch (error) {
-      console.error("Mark as seen error:", error); // ✅ NEW — pehle ye function bina try-catch ke tha
-      message.error("Failed to mark as seen."); // ✅ NEW
+      console.error("Mark as seen error:", error); 
+      message.error("Failed to mark as seen."); 
     }
   }
 

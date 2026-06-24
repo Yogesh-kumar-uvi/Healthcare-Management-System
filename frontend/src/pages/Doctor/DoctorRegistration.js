@@ -1,7 +1,8 @@
 import axios from "axios";
 import React, { useState } from "react";
 import { Button, Form, Modal } from "react-bootstrap";
-import { message } from "antd"; // ✅ NEW import
+import { message } from "antd"; 
+import { API_URL } from "../../config";
 
 const specializations = [
   "Cardiologist", "Dermatologist", "Neurologist", "Orthopedic",
@@ -22,7 +23,7 @@ const DoctorRegistration = () => {
   const [timing, setTiming] = useState({ from: "09:00", to: "17:00" });
   const [errors, setErrors] = useState({});
   const [showModal, setShowModal] = useState(false);
-  const [submitting, setSubmitting] = useState(false); // ✅ NEW
+  const [submitting, setSubmitting] = useState(false); 
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -87,13 +88,13 @@ const DoctorRegistration = () => {
     setSubmitting(true); // ✅ NEW
     try {
       const response = await axios.post(
-        "http://localhost:8080/doctor/api/v1/registration",
+        `${API_URL}/doctor/api/v1/registration`,
         submitData
       );
       if (response.status === 200) setShowModal(true);
     } catch (error) {
-      console.error("Doctor registration error:", error); // ✅ FIX — context ke saath log
-      // ✅ FIX — alert() ki jagah message.error() use kiya, behtar UX ke liye
+      console.error("Doctor registration error:", error); 
+      
       const errMsg = error.response?.data?.message || "Registration failed. Please try again.";
       message.error(errMsg);
     } finally {

@@ -18,9 +18,9 @@ import cors from "cors";
 
 const app = express();
 
-// CORS
+// ✅ FIX — CORS env variable se, fallback localhost
 app.use(cors({
-  origin: "http://localhost:3000",
+  origin: process.env.CLIENT_URL || "http://localhost:3000",
   methods: ["GET", "POST", "PUT", "DELETE"],
   credentials: true
 }));
@@ -39,7 +39,7 @@ connectDb(MongoDBURI);
 app.use("/user/api/v1", userRoutes);
 app.use("/doctor/api/v1", doctorRoutes);
 app.use("/appointment/api/v1", appointmentRoute);
-app.use("/notification/api/v1", notificationRoute);  
+app.use("/notification/api/v1", notificationRoute);
 app.use("/conversation/api/v1", conversationRoute);
 app.use("/prescription/api/v1", prescriptionRoute);
 app.use("/upload/api/v1", uploadRoute);
@@ -49,7 +49,7 @@ const httpServer = createServer(app);
 
 const io = new Server(httpServer, {
   cors: {
-    origin: "http://localhost:3000",
+    origin: process.env.CLIENT_URL || "http://localhost:3000", // ✅ FIX
     methods: ["GET", "POST"],
     credentials: true
   }
@@ -91,20 +91,15 @@ io.on("connection", (socket) => {
     }
   });
 
-  // ✅ NEW — Video/Audio Call Signaling
-
-  // Caller dusre ko call karta hai
   socket.on("callUser", ({ from, to, offer, callType, callerName }) => {
     const targetSocket = onlineUsers.get(to);
     if (targetSocket) {
       io.to(targetSocket).emit("incomingCall", { from, offer, callType, callerName });
     } else {
-      // Target offline hai — caller ko bata do
       socket.emit("callFailed", { message: "User is offline" });
     }
   });
 
-  // Receiver call accept karta hai
   socket.on("answerCall", ({ from, to, answer }) => {
     const targetSocket = onlineUsers.get(to);
     if (targetSocket) {
@@ -112,7 +107,6 @@ io.on("connection", (socket) => {
     }
   });
 
-  // ICE candidates exchange (connection establish karne ke liye)
   socket.on("iceCandidate", ({ to, candidate }) => {
     const targetSocket = onlineUsers.get(to);
     if (targetSocket) {
@@ -120,7 +114,6 @@ io.on("connection", (socket) => {
     }
   });
 
-  // Call reject/decline
   socket.on("rejectCall", ({ to }) => {
     const targetSocket = onlineUsers.get(to);
     if (targetSocket) {
@@ -128,7 +121,6 @@ io.on("connection", (socket) => {
     }
   });
 
-  // Call end
   socket.on("endCall", ({ to }) => {
     const targetSocket = onlineUsers.get(to);
     if (targetSocket) {
@@ -150,5 +142,5 @@ io.on("connection", (socket) => {
 
 httpServer.listen(
   PORT,
-  () => console.log(`Server running on http://localhost:${PORT}`)
+  () => console.log(`Server running on port ${PORT}`) // ✅ FIX — hardcoded localhost text hata diya
 );
