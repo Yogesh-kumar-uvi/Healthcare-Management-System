@@ -1,46 +1,48 @@
-import React, {useEffect} from 'react'
+import React, { useEffect, useState } from 'react'
 import { Navigate } from 'react-router-dom';
 import axios from 'axios'
-import {useSelector, useDispatch} from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { hideLoading, showLoading } from '../../Redux/AlertSlice';
-import { setDoctor } from '../../Redux/DoctorSlice'; 
+import { setDoctor } from '../../Redux/DoctorSlice';
+import { API_URL } from '../../config'; // ✅ FIX — hardcoded localhost:8081 hata diya
 
-export default function ProtectedDoctorRoute({children}) {
-  const dispatch = useDispatch()
-  const {doctor} = useSelector(state => state.doctor)
+export default function ProtectedDoctorRoute({ children }) {
+  const dispatch = useDispatch();
+  const { doctor } = useSelector(state => state.doctor);
+  const [checking, setChecking] = useState(true);
+  const [authed, setAuthed] = useState(false);
 
-  // get doctor
-  const getDoctor = async() =>{
-    try {
-      dispatch(showLoading())
-      const res = await axios.post('http://localhost:8081/doctor/api/v1/getDoctor',
-      { token : localStorage.getItem('token')},
-      {
-        headers:{
-          authorization: `Bearer ${localStorage.getItem('token')}`
+  useEffect(() => {
+    if (doctor) {
+      setAuthed(true);
+      setChecking(false);
+      return;
+    }
+
+    const getDoctor = async () => {
+      try {
+        dispatch(showLoading());
+        const res = await axios.post(
+          `${API_URL}/doctor/api/v1/getDoctor`,
+          {},
+          { withCredentials: true }
+        );
+        if (res.data.success) {
+          dispatch(setDoctor(res.data.data));
+          setAuthed(true);
+        } else {
+          setAuthed(false);
         }
+      } catch (error) {
+        setAuthed(false);
+      } finally {
+        dispatch(hideLoading());
+        setChecking(false);
       }
-      )
-      if (res.data.success) {
-        dispatch(setDoctor(res.data.data))
-      }else{
-        <Navigate to="/Home" />
-      }
-      dispatch(hideLoading())
-    } catch (error) {
-    //   dispatch(hideLoading())
-      console.log(error);
-    }
-  }
-  useEffect(()=>{
-    if(!doctor){
-      getDoctor();
-    }
-  },[])
+    };
+    getDoctor();
+  }, []);
 
-  if (localStorage.getItem("token")) {
-    return children;
-  } else {
-    return <Navigate to="/" />;
-  }
+  if (checking) return null;
+  return authed ? children : <Navigate to="/" />;
 }
