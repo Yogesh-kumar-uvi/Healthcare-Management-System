@@ -749,6 +749,7 @@
   }
 }
 
+
 /* Utility */
 .flex-row { display: flex; flex-direction: row; }
 .flex-col { display: flex; flex-direction: column; }
@@ -760,3 +761,34 @@
 .mb-4 { margin-bottom: 20px; }
 .text-muted { color: var(--text-muted); font-size: 13px; }
 .fw-bold { font-weight: 700; }
+
+/* ============ RESPONSIVE — Appointments table (added) ============ */
+
+@media (max-width: 425px) {
+  .appt-table th,
+  .appt-table td {
+    white-space: nowrap;
+    padding: 10px 12px;
+    font-size: 13px;
+  }
+}
+
+@media (max-width: 375px) {
+  .appt-table th,
+  .appt-table td {
+    padding: 8px 10px;
+    font-size: 12px;
+  }
+
+  .hc-card {
+    padding: 14px;
+  }
+}
+
+@media (max-width: 320px) {
+  .appt-table th,
+  .appt-table td {
+    padding: 6px 8px;
+    font-size: 11px;
+  }
+}

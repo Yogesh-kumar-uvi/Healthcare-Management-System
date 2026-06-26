@@ -154,3 +154,52 @@
   margin-bottom: 12px;
   display: block;
 }
+
+/* ============ RESPONSIVE (Mobile) — added, nothing else touched ============ */
+
+/* Mobile-L : 425px */
+@media (max-width: 425px) {
+  .user-table {
+    display: block;
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .user-table th,
+  .user-table td {
+    white-space: nowrap;
+    padding: 10px 12px;
+    font-size: 13px;
+  }
+
+  .profile-pic,
+  .patient-avatar {
+    width: 30px;
+    height: 30px;
+  }
+}
+
+/* Mobile-M : 375px */
+@media (max-width: 375px) {
+  .user-table th,
+  .user-table td {
+    padding: 8px 10px;
+    font-size: 12px;
+  }
+}
+
+/* Mobile-S : 320px */
+@media (max-width: 320px) {
+  .user-table th,
+  .user-table td {
+    padding: 6px 8px;
+    font-size: 11px;
+  }
+
+  .profile-pic,
+  .patient-avatar {
+    width: 26px;
+    height: 26px;
+  }
+}
