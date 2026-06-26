@@ -1,6 +1,7 @@
 import doctorModel from "../models/doctorModel.js";
 import userModel from "../models/userModel.js";
 import appointmentModel from "../models/appointmentModel.js";
+import slotModel from "../models/slotModel.js"; // ✅ NEW
 import asyncHandler from "express-async-handler";
 import notificationModel from "../models/notificationModel.js";
 import razorpay from "../config/razorpayConfig.js";
@@ -309,9 +310,129 @@ const getPaymentList = asyncHandler(async (req, res) => {
   return res.status(200).json({ message: "Payment List Sent", data: paymentList });
 });
 
+// ✅ NEW — Razorpay Webhook
+// Frontend confirm hone ke baad bhi backend ko payment ka pata na chale (browser band/network fail),
+// us case ke liye Razorpay khud server-to-server event bhejta hai. Yahi source of truth hai.
+const razorpayWebhook = async (req, res) => {
+  try {
+    const webhookSignature = req.headers["x-razorpay-signature"];
+    const webhookSecret = process.env.RAZORPAY_WEBHOOK_SECRET;
+
+    if (!webhookSignature || !webhookSecret) {
+      return res.status(400).json({ success: false, message: "Missing signature/secret" });
+    }
+
+    // ⚠️ req.body yahan ek raw Buffer hai — server.js me is route ke liye express.raw() lagaya gaya hai
+    const expectedSignature = crypto
+      .createHmac("sha256", webhookSecret)
+      .update(req.body)
+      .digest("hex");
+
+    if (expectedSignature !== webhookSignature) {
+      console.warn("⚠️ Webhook signature mismatch — request ignored");
+      return res.status(400).json({ success: false, message: "Invalid signature" });
+    }
+
+    const payload = JSON.parse(req.body.toString());
+    const event = payload.event;
+
+    if (event === "payment.captured") {
+      const paymentEntity = payload.payload.payment.entity;
+      await Payment.findOneAndUpdate(
+        { razorpayOrderId: paymentEntity.order_id },
+        {
+          paymentStatus: "Fully Paid",
+          razorpayPaymentId: paymentEntity.id,
+          paymentDate: Date.now(),
+        }
+      );
+      console.log(`✅ Webhook: payment captured — order ${paymentEntity.order_id}`);
+    }
+
+    if (event === "payment.failed") {
+      const paymentEntity = payload.payload.payment.entity;
+      await Payment.findOneAndUpdate(
+        { razorpayOrderId: paymentEntity.order_id },
+        { paymentStatus: "Pending" }
+      );
+      console.log(`❌ Webhook: payment failed — order ${paymentEntity.order_id}`);
+    }
+
+    // Razorpay ko turant 200 do, warna woh isi event ko baar-baar retry karega
+    return res.status(200).json({ success: true });
+  } catch (error) {
+    console.error("Webhook Error:", error.message);
+    return res.status(500).json({ success: false });
+  }
+};
+
+// ✅ NEW — slot-based booking (purane free-text createAppointment ke parallel,
+// usse replace nahi kiya taaki kahin aur existing flow na toote)
+const bookSlotAppointment = asyncHandler(async (req, res) => {
+  const { userID, slotId } = req.body;
+  if (!userID || !slotId)
+    return res.status(400).json({ message: "Provide complete data", success: false });
+
+  const user = await userModel.findById(userID);
+  if (!user) return res.status(400).json({ message: "No such user found.", success: false });
+
+  // ✅ ATOMIC update — condition { isBooked: false } ke saath findOneAndUpdate karne se
+  // race condition nahi hoti: agar 2 patients EK saath same slot book karne ki koshish karein,
+  // MongoDB level pe sirf ek hi update succeed hoga, doosre ko slot=null milega.
+  const slot = await slotModel.findOneAndUpdate(
+    { _id: slotId, isBooked: false },
+    { isBooked: true },
+    { new: true }
+  );
+
+  if (!slot) {
+    return res.status(400).json({ message: "Sorry, this slot is already booked. Please pick another.", success: false });
+  }
+
+  const doctor = await doctorModel.findById(slot.doctor);
+  if (!doctor) {
+    // rollback — agar doctor hi nahi mila to slot wapas free kar do
+    slot.isBooked = false;
+    await slot.save();
+    return res.status(400).json({ message: "No such doctor found.", success: false });
+  }
+
+  const appointment = new appointmentModel({
+    user: userID,
+    doctor: slot.doctor,
+    day: `${slot.date} ${slot.time}`,        // legacy field bhi bharo, backward-compatible rahega
+    slot: slot._id,
+    appointmentDate: new Date(`${slot.date}T${slot.time}`),
+  });
+
+  const result = await appointment.save();
+
+  slot.appointment = result._id;
+  await slot.save();
+
+  sendEmail(
+    user.email,
+    "Appointment Request Received — MediCare HMS",
+    `<div style="font-family:Arial,sans-serif;max-width:600px;margin:0 auto;">
+      <h2 style="color:#0f6e56;">Hello ${user.name},</h2>
+      <p>Your appointment request has been received successfully.</p>
+      <table style="width:100%;margin:16px 0;font-size:14px;">
+        <tr><td style="padding:6px 0;color:#5f5e5a;">Doctor</td><td style="font-weight:600;">Dr. ${doctor.name}</td></tr>
+        <tr><td style="padding:6px 0;color:#5f5e5a;">Date</td><td>${slot.date}</td></tr>
+        <tr><td style="padding:6px 0;color:#5f5e5a;">Time</td><td>${slot.time}</td></tr>
+        <tr><td style="padding:6px 0;color:#5f5e5a;">Status</td><td style="color:#854f0b;font-weight:600;">Pending Confirmation</td></tr>
+      </table>
+      <p>You will be notified once the doctor confirms your appointment.</p>
+      <p style="margin-top:20px;color:#5f5e5a;font-size:13px;">— MediCare HMS Team</p>
+    </div>`
+  );
+
+  return res.status(200).json({ message: "Appointment booked successfully", data: result, success: true });
+});
+
 export {
   createAppointment, getAppointmentDetails, deleteAppointment, updateAppointment,
   getAppointmentByDoctor, appointmentApproval, appointmentCancel, appointmentComplete,
   getAppointmentByUser, getUniqueAppointmentByUser, createRazorpayOrder,
-  checkStatus, verifySignature, getPaymentList,
+  checkStatus, verifySignature, getPaymentList, razorpayWebhook, bookSlotAppointment,
 };

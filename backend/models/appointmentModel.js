@@ -16,6 +16,18 @@ const appointmentSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    // ✅ NEW — slot-based booking se aane wale appointments ke liye
+    slot: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "slots",
+      default: null,
+    },
+    // ✅ NEW — real Date object, isse "kal ka appointment kaun sa hai" jaisi queries possible hoti hain
+    // (purana `day` field free-text hai jaise "Monday 10AM", uspe date-math nahi ho sakta)
+    appointmentDate: {
+      type: Date,
+      default: null,
+    },
     status: {
       type: String,
       enum: ["Pending", "Completed", "Confirmed", "Cancelled"],

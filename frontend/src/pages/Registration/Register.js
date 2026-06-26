@@ -84,17 +84,9 @@ const Register = () => {
         );
         dispatch(hideLoading());
         if (res.data.success) {
-          localStorage.setItem("token", res.data.token);
-          const res2 = await axios.post(
-            `${API_URL}/user/api/v1/getUserData`,
-            { token: localStorage.getItem("token") },
-            {
-              headers: {
-                authorization: `Bearer ${localStorage.getItem("token")}`,
-              },
-            }
-          );
-          if (res.data.success) {
+          // ✅ UPDATED — cookie backend ne set kar diya, localStorage nahi chahiye
+          const res2 = await axios.post(`${API_URL}/user/api/v1/getUserData`);
+          if (res2.data.success) {
             dispatch(setUser(res2.data.data));
           }
           message.success("Login Successfully");

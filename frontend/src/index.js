@@ -7,6 +7,12 @@ import { Provider } from 'react-redux';
 import { PersistGate } from 'redux-persist/integration/react'; // ✅ NEW import
 import store, { persistor } from './Redux/store'; // ✅ FIX — persistor bhi import
 import 'bootstrap/dist/css/bootstrap.min.css';
+import axios from 'axios'; // ✅ NEW
+
+// ✅ NEW — har axios request ke saath httpOnly cookie automatically bhejne ke liye.
+// Isse alag se "Authorization: Bearer token" header lagane ki zaroorat khatam ho jaati hai —
+// backend ka cors({credentials:true}) already isi ke liye configured hai.
+axios.defaults.withCredentials = true;
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(

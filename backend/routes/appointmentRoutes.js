@@ -8,12 +8,15 @@ import {
   verifySignature,
   checkStatus,
   getPaymentList,
+  bookSlotAppointment,
 } from "../controllers/appointmentController.js";
+import { bookSlotValidation } from "../middleware/validators.js"; // ✅ NEW
 import { offlineDoctor } from "../controllers/doctorController.js";
 
 const router = express.Router();
 
 router.post("/", createAppointment);
+router.post("/book-slot", bookSlotValidation, bookSlotAppointment); // ✅ UPDATED
 router.get("/", getAppointmentDetails);
 router.delete("/", deleteAppointment);
 router.put("/", updateAppointment);

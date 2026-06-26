@@ -87,9 +87,27 @@ const doctorLogin = asyncHandler(async (req, res) => {
   const token = jwt.sign({ id: doctor._id }, process.env.JWT_SECRET, {
     expiresIn: "1d",
   });
-  return res
-    .status(200)
-    .json({ message: "Login Success", success: true, token, success: true });
+
+  // ✅ NEW — httpOnly cookie, user login wala hi pattern
+  res.cookie("token", token, {
+    httpOnly: true,
+    secure: false, 
+    secure: process.env.NODE_ENV === "production",
+    sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+    maxAge: 24 * 60 * 60 * 1000,
+  });
+
+  return res.status(200).json({ message: "Login Success", success: true });
+});
+
+// ✅ NEW — doctor logout
+const doctorLogout = asyncHandler(async (req, res) => {
+  res.clearCookie("token", {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+  });
+  return res.status(200).json({ message: "Logged out successfully", success: true });
 });
 
 const getAllDoctors = asyncHandler(async (req, res) => {
@@ -104,10 +122,10 @@ const getAllDoctors = asyncHandler(async (req, res) => {
 const getDoctor = asyncHandler(async (req, res) => {
   const { doctorID } = req.body;
   const doctor = await doctorModel.findById(doctorID).select("-password");
-  if (!doctor) return res.status(400).json({ message: "No doctor found." });
+  if (!doctor) return res.status(400).json({ message: "No doctor found.", success: false }); // ✅ FIX — success field add kiya
   return res
     .status(200)
-    .json({ message: "Doctor sent successfully.", data: doctor });
+    .json({ message: "Doctor sent successfully.", data: doctor, success: true }); // ✅ FIX — success: true add kiya (pehle missing tha, isliye frontend ka res.data.success check hamesha false aata tha)
 });
 
 const updateDoctorProfile = asyncHandler(async (req, res) => {
@@ -180,4 +198,5 @@ export {
   getDoctor,
   updateDoctorProfile,
   offlineDoctor,
+  doctorLogout,
 };

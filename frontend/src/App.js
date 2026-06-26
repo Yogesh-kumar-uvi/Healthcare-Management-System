@@ -12,6 +12,8 @@ import ProtectedRoute from "./components/ProtectedRoutes/ProtectedRoutes.jsx";
 import ProtectedDoctorRoute from "./components/ProtectedRoutes/ProtectedDoctorRoutes.jsx";
 import Doctor from "./pages/Doctor/Doctor.js";
 import Conversation from "./components/conversation/Conversation.js";
+import ForgotPassword from "./pages/ForgotPassword/ForgotPassword.js"; // ✅ NEW
+import ResetPassword from "./pages/ResetPassword/ResetPassword.js"; // ✅ NEW
 
 function App() {
   const { loading } = useSelector((state) => state.alert);
@@ -47,6 +49,9 @@ function App() {
                 </ProtectedDoctorRoute>
               }
             />
+            {/* ✅ NEW — forgot password flow, dono open routes hain (login se pehle hi access hote hain) */}
+            <Route path="/forgot-password" element={<ForgotPassword />} />
+            <Route path="/reset-password/:token" element={<ResetPassword />} />
           </Routes>
         )}
       </BrowserRouter>

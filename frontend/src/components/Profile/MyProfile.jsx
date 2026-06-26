@@ -32,12 +32,8 @@ const MyProfile = () => {
         try {
             const response = await axios.put(
                 `${API_URL}/user/api/v1/updateUserProfile`,
-                { userID: user.id, ...formData },
-                {
-                    headers: {
-                        authorization: `Bearer ${localStorage.getItem("token")}`,
-                    },
-                }
+                { userID: user.id, ...formData }
+                // ✅ UPDATED — auth header ki zaroorat nahi, cookie automatically jaati hai
             );
             if (response.data.success) {
                 dispatch(setUser({ ...user, ...response.data.data }));
@@ -151,7 +147,7 @@ const MyProfile = () => {
                                 opacity: saving ? 0.7 : 1, // ✅ NEW
                             }}
                         >
-                            {saving ? "Saving..." : "Save Changes"} {/* ✅ NEW */}
+                            {saving ? "Saving..." : "Save Changes"}
                         </button>
                         <button
                             onClick={() => setEdit(false)}

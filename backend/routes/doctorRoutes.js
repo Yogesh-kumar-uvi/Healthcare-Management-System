@@ -6,6 +6,7 @@ import {
   getDoctor,
   updateDoctorProfile,
   offlineDoctor,
+  doctorLogout,  // ✅ ADD
 } from "../controllers/doctorController.js";
 import {
   appointmentApproval,
@@ -21,6 +22,7 @@ router.get("/", getAllDoctors);
 router.post("/getDoctor", isDoctor, getDoctor);
 router.post("/registration", doctorRegistration);
 router.post("/login", doctorLogin);
+router.post("/logout", isDoctor, doctorLogout);  // ✅ ADD
 router.put("/", updateDoctorProfile);
 router.get("/doctorAppointments/:doctorID", getAppointmentByDoctor);
 router.put("/approval", appointmentApproval);

@@ -4,29 +4,22 @@ import React, { useState } from "react";
 import { Button, Form } from "react-bootstrap";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { API_URL } from '../../config'
+import { API_URL } from '../../config';
 import { setDoctor } from "../../Redux/DoctorSlice";
 
 const DoctorLogin = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const [formData, setFormData] = useState({
-    email: "",
-    password: "",
-  });
-  const [errors, setErrors] = useState({}); 
-  const [submitting, setSubmitting] = useState(false); 
+  const [formData, setFormData] = useState({ email: "", password: "" });
+  const [errors, setErrors] = useState({});
+  const [submitting, setSubmitting] = useState(false);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prevState) => ({
-      ...prevState,
-      [name]: value,
-    }));
-    if (errors[name]) setErrors((prev) => ({ ...prev, [name]: "" })); // ✅ NEW
+    setFormData((prevState) => ({ ...prevState, [name]: value }));
+    if (errors[name]) setErrors((prev) => ({ ...prev, [name]: "" }));
   };
 
-  // ✅ NEW — basic validation
   const validate = () => {
     const newErrors = {};
     if (!formData.email.trim()) newErrors.email = "Email zaroori hai";
@@ -36,47 +29,39 @@ const DoctorLogin = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    
     const validationErrors = validate();
     if (Object.keys(validationErrors).length > 0) {
       setErrors(validationErrors);
       return;
     }
 
-    setSubmitting(true); 
+    setSubmitting(true);
     try {
       const res = await axios.post(
         `${API_URL}/doctor/api/v1/login`,
-        formData
+        formData,
+        { withCredentials: true }  // ✅ FIX
       );
       if (res.data.success) {
-        localStorage.setItem("token", res.data.token);
         const res2 = await axios.post(
           `${API_URL}/doctor/api/v1/getDoctor`,
-          { token: localStorage.getItem("token") },
-          {
-            headers: {
-              authorization: `Bearer ${localStorage.getItem("token")}`,
-            },
-          }
+          {},
+          { withCredentials: true }  // ✅ FIX
         );
-        if (res.data.success) {
+        if (res2.data.success) {
           dispatch(setDoctor(res2.data.data));
         }
         message.success("Login Successfully");
         navigate("/Doctor");
       } else {
-        
         message.error(res.data.message || "Enter correct credentials");
       }
     } catch (error) {
       console.error("Doctor login error:", error);
-      
       const errMsg = error.response?.data?.message || "Something went wrong. Please try again.";
       message.error(errMsg);
     } finally {
-      setSubmitting(false); 
+      setSubmitting(false);
     }
   };
 
@@ -91,7 +76,7 @@ const DoctorLogin = () => {
             placeholder="Enter email"
             value={formData.email}
             onChange={handleChange}
-            isInvalid={!!errors.email} 
+            isInvalid={!!errors.email}
           />
           {errors.email && (
             <div style={{ color: "#dc2626", fontSize: 12, marginTop: 4 }}>
@@ -111,9 +96,9 @@ const DoctorLogin = () => {
             placeholder="Password"
             value={formData.password}
             onChange={handleChange}
-            isInvalid={!!errors.password} 
+            isInvalid={!!errors.password}
           />
-          {errors.password && ( 
+          {errors.password && (
             <div style={{ color: "#dc2626", fontSize: 12, marginTop: 4 }}>
               ⚠️ {errors.password}
             </div>
@@ -125,7 +110,7 @@ const DoctorLogin = () => {
         </Form.Group>
 
         <Button variant="primary" type="submit" disabled={submitting}>
-          {submitting ? "Logging in..." : "Submit"} {/* ✅ NEW */}
+          {submitting ? "Logging in..." : "Submit"}
         </Button>
       </Form>
     </>

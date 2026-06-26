@@ -15,6 +15,12 @@ const Home = () => {
   const [search, setSearch] = useState('');
   const { user } = useSelector(state => state.user)
 
+  // ✅ NEW — slot-booking ke liye state
+  const [selectedDate, setSelectedDate] = useState('');
+  const [availableSlots, setAvailableSlots] = useState([]);
+  const [selectedSlot, setSelectedSlot] = useState(null);
+  const [loadingSlots, setLoadingSlots] = useState(false);
+
   const dataGetter = async () => {
     try {
       const resp = await axios.get(`${API_URL}/user/api/v1/getAllDoctors`)
@@ -26,6 +32,31 @@ const Home = () => {
 
   useEffect(() => { dataGetter() }, [])
 
+  // ✅ NEW — selected doctor + date ke available slots backend se fetch karo
+  const fetchSlots = async (doctorId, date) => {
+    if (!doctorId || !date) { setAvailableSlots([]); return; }
+    setLoadingSlots(true);
+    try {
+      const resp = await axios.get(`${API_URL}/slot/api/v1/available`, {
+        params: { doctorId, date },
+      });
+      if (resp.data.success) setAvailableSlots(resp.data.data);
+      else setAvailableSlots([]);
+    } catch (error) {
+      message.error("Failed to load available slots");
+      setAvailableSlots([]);
+    } finally {
+      setLoadingSlots(false);
+    }
+  };
+
+  useEffect(() => {
+    if (doctdetail?._id && selectedDate) {
+      fetchSlots(doctdetail._id, selectedDate);
+      setSelectedSlot(null);
+    }
+  }, [selectedDate, doctdetail]);
+
   useEffect(() => {
     const script = document.createElement('script');
     script.src = 'https://checkout.razorpay.com/v1/checkout.js';
@@ -34,19 +65,29 @@ const Home = () => {
     return () => { document.body.removeChild(script); };
   }, []);
 
-  const createAppointment = async (item) => {
-    const time = `${item.availableTimings.day1} ${item.availableTimings.time1}  ${item.availableTimings.day2} ${item.availableTimings.time2}`
+  // ✅ NEW — slot-based booking. Payment success ke baad isse call karte hain.
+  // (Purana free-text `createAppointment` function yahan se hata diya gaya hai — woh ab
+  // kahin call nahi hota tha kyunki booking flow ab date+slot select karta hai, isliye
+  // ESLint "createAppointment is assigned a value but never used" warning de raha tha.)
+  const bookSlot = async () => {
+    if (!selectedSlot) {
+      message.error("Please select a slot first");
+      return;
+    }
     try {
-      const resp = await axios.post(`${API_URL}/appointment/api/v1/`, {
-        userID: user.id, doctorID: item._id, timing: time
-      })
+      const resp = await axios.post(`${API_URL}/appointment/api/v1/book-slot`, {
+        userID: user.id, slotId: selectedSlot._id,
+      });
       if (resp.data.success) {
-        message.success(resp.data.message)
-        navigate("Appointments")
+        message.success(resp.data.message);
+        navigate("Appointments");
+      } else {
+        message.error(resp.data.message || "Slot booking failed");
       }
-    } catch (error) { message.error("Appointment failed") }
-  }
-
+    } catch (error) {
+      message.error(error.response?.data?.message || "Appointment failed");
+    }
+  };
 
   const formatPhoneForRazorpay = (phone) => {
     if (!phone) return "";
@@ -55,11 +96,11 @@ const Home = () => {
     if (digitsOnly.length === 12 && digitsOnly.startsWith("91")) {
       return `+${digitsOnly}`;
     }
-    
+
     if (digitsOnly.length === 10) {
       return `+91${digitsOnly}`;
     }
-   
+
     return `+91${digitsOnly}`;
   };
 
@@ -82,12 +123,12 @@ const Home = () => {
           razorpay_order_id: response.razorpay_order_id,
           razorpay_signature: response.razorpay_signature
         });
-        if (orderResult.data.success) createAppointment(doctdetail);
+        if (orderResult.data.success) bookSlot();
       },
       prefill: {
         name: user.name,
         email: user.email,
-        contact: formatPhoneForRazorpay(user.phone) 
+        contact: formatPhoneForRazorpay(user.phone)
       },
       theme: { color: '#0f4c81' },
     };
@@ -179,7 +220,10 @@ const Home = () => {
               {doc.availableTimings?.day2} {doc.availableTimings?.time2}
             </div>
             <button
-              onClick={() => { setDoctdetail(doc); setShow(true); }}
+              onClick={() => {
+                setDoctdetail(doc); setShow(true);
+                setSelectedDate(''); setSelectedSlot(null); setAvailableSlots([]); // ✅ NEW — reset
+              }}
               style={{
                 width: '100%', padding: '10px', borderRadius: 10,
                 background: 'linear-gradient(135deg, #0f4c81, #1a6bb5)',
@@ -226,7 +270,6 @@ const Home = () => {
               {[
                 { label: 'Experience', val: `${doctdetail.experience} years` },
                 { label: 'Consultation Fees', val: `₹${doctdetail.fees}`, highlight: true },
-                { label: 'Available', val: `${doctdetail.availableTimings?.day1} ${doctdetail.availableTimings?.time1} · ${doctdetail.availableTimings?.day2} ${doctdetail.availableTimings?.time2}` },
               ].map((row, i) => (
                 <div key={i} style={{
                   display: 'flex', justifyContent: 'space-between',
@@ -238,6 +281,53 @@ const Home = () => {
                   </span>
                 </div>
               ))}
+
+              {/* ✅ NEW — Date picker + available slots (slot-based booking system) */}
+              <div style={{ marginTop: 16 }}>
+                <label style={{ fontSize: 13, fontWeight: 700, color: '#1a1a2e', display: 'block', marginBottom: 6 }}>
+                  Select Date
+                </label>
+                <input
+                  type="date"
+                  min={new Date().toISOString().split('T')[0]}
+                  value={selectedDate}
+                  onChange={(e) => setSelectedDate(e.target.value)}
+                  style={{ width: '100%', padding: '8px 10px', borderRadius: 8, border: '1.5px solid #e8eef5', fontSize: 14 }}
+                />
+              </div>
+
+              {selectedDate && (
+                <div style={{ marginTop: 14 }}>
+                  <label style={{ fontSize: 13, fontWeight: 700, color: '#1a1a2e', display: 'block', marginBottom: 8 }}>
+                    Available Slots
+                  </label>
+                  {loadingSlots ? (
+                    <div style={{ fontSize: 13, color: '#6b7280' }}>Loading slots...</div>
+                  ) : availableSlots.length === 0 ? (
+                    <div style={{ fontSize: 13, color: '#dc2626' }}>
+                      No slots available on this date. Try another date.
+                    </div>
+                  ) : (
+                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+                      {availableSlots.map((slot) => (
+                        <button
+                          key={slot._id}
+                          onClick={() => setSelectedSlot(slot)}
+                          style={{
+                            padding: '6px 14px', borderRadius: 8, fontSize: 13, fontWeight: 600,
+                            border: selectedSlot?._id === slot._id ? '1.5px solid #0f4c81' : '1.5px solid #e8eef5',
+                            background: selectedSlot?._id === slot._id ? '#0f4c81' : 'white',
+                            color: selectedSlot?._id === slot._id ? 'white' : '#1a1a2e',
+                            cursor: 'pointer',
+                          }}
+                        >
+                          {slot.time}
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
           )}
         </Modal.Body>
@@ -246,11 +336,15 @@ const Home = () => {
             padding: '10px 20px', borderRadius: 10, border: '1.5px solid #e8eef5',
             background: 'white', color: '#6b7280', fontWeight: 600, cursor: 'pointer'
           }}>Cancel</button>
-          <button onClick={() => { setShow(false); openRazorpay(doctdetail); }} style={{
-            padding: '10px 24px', borderRadius: 10, border: 'none',
-            background: 'linear-gradient(135deg,#0f4c81,#1a6bb5)',
-            color: 'white', fontWeight: 700, cursor: 'pointer'
-          }}>
+          <button
+            disabled={!selectedSlot}
+            onClick={() => { setShow(false); openRazorpay(doctdetail); }}
+            style={{
+              padding: '10px 24px', borderRadius: 10, border: 'none',
+              background: selectedSlot ? 'linear-gradient(135deg,#0f4c81,#1a6bb5)' : '#cbd5e1',
+              color: 'white', fontWeight: 700, cursor: selectedSlot ? 'pointer' : 'not-allowed'
+            }}
+          >
             Pay & Confirm
           </button>
         </Modal.Footer>

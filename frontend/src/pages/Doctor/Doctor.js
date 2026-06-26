@@ -11,6 +11,7 @@ import NurseList from "../../components/doctor/nurseList/nurseList.jsx";
 import PharmacistList from "../../components/doctor/pharmacistList/PharmacistList.jsx";
 import Department from "../../components/doctor/department/Department.jsx";
 import Payment from "../../components/doctor/Payment.jsx";
+import ManageAvailability from "../../components/doctor/ManageAvailability.jsx"; // ✅ NEW
 import { API_URL } from '../../config'
 import axios from "axios";
 
@@ -18,6 +19,7 @@ const navItems = [
   { key: "dashboard", icon: "fa-chart-line", label: "Dashboard" },
   { key: "department", icon: "fa-hospital", label: "Department" },
   { key: "doctor", icon: "fa-user-tie", label: "My Profile" },
+  { key: "Availability", icon: "fa-calendar-days", label: "Availability" }, // ✅ NEW
   { key: "Patient", icon: "fa-users", label: "Patients" },
   { key: "Payment", icon: "fa-money-bill-wave", label: "Payments" },
   { key: "Nurse", icon: "fa-user-nurse", label: "Nurses" },
@@ -50,8 +52,14 @@ const Doctor = () => {
     } catch (e) {
       console.error("Failed to set doctor offline:", e);
     }
+    // ✅ UPDATED — cookie clear karne ke liye backend endpoint call zaroori hai,
+    // localStorage.removeItem se httpOnly cookie clear nahi hoti.
+    try {
+      await axios.post(`${API_URL}/doctor/api/v1/logout`);
+    } catch (e) {
+      console.error("Logout error:", e);
+    }
     dispatch(setDoctor(null));
-    localStorage.removeItem("token");
     navigate("/");
     message.success("Logged out successfully");
   };
@@ -97,6 +105,7 @@ const Doctor = () => {
     Payment: { title: "Payment Details", comp: <Payment /> },
     Nurse: { title: "Nurse List", comp: <NurseList /> },
     Pharmacist: { title: "Pharmacist List", comp: <PharmacistList /> },
+    Availability: { title: "Manage Availability", comp: <ManageAvailability /> }, // ✅ NEW
   };
 
   return (

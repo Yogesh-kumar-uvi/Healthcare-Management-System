@@ -34,6 +34,15 @@ const userSchema = new mongoose.Schema(
       type: Date,
       default: null,
     },
+    // ✅ NEW — forgot password flow ke liye
+    resetPasswordToken: {
+      type: String,
+      default: undefined,
+    },
+    resetPasswordExpire: {
+      type: Date,
+      default: undefined,
+    },
   },
   { timestamps: true }
 );

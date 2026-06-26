@@ -13,7 +13,11 @@ import conversationRoute from "./routes/conversationRoute.js";
 import doctorModel from "./models/doctorModel.js";
 import prescriptionRoute from "./routes/prescriptionRoutes.js";
 import uploadRoute from "./routes/uploadRoutes.js";
+import slotRoute from "./routes/slotRoutes.js"; // ✅ NEW
+import startReminderJob from "./utils/reminderJob.js"; // ✅ NEW
 import cors from "cors";
+import cookieParser from "cookie-parser"; // ✅ NEW
+import { razorpayWebhook } from "./controllers/appointmentController.js"; // ✅ NEW
 
 const app = express();
 
@@ -27,8 +31,18 @@ app.use(cors({
 const PORT = process.env.PORT || 8080;
 const MongoDBURI = process.env.MONGO_URI;
 
+// ✅ NEW — Razorpay Webhook route
+// ⚠️ IMPORTANT: yeh express.json() se PEHLE hona chahiye, kyunki signature
+// verify karne ke liye raw bytes chahiye, parsed JSON object nahi.
+app.post(
+  "/appointment/api/v1/webhook",
+  express.raw({ type: "application/json" }),
+  razorpayWebhook
+);
+
 // Middlewares
 app.use(express.json());
+app.use(cookieParser()); // ✅ NEW — cookie se token padhne ke liye
 // app.use(morgan("dev"));
 
 // Connect MongoDB
@@ -42,13 +56,14 @@ app.use("/notification/api/v1", notificationRoute);
 app.use("/conversation/api/v1", conversationRoute);
 app.use("/prescription/api/v1", prescriptionRoute);
 app.use("/upload/api/v1", uploadRoute);
+app.use("/slot/api/v1", slotRoute); // ✅ NEW
 
 // ✅ HTTP server + Socket.io
 const httpServer = createServer(app);
 
 const io = new Server(httpServer, {
   cors: {
-    origin: process.env.CLIENT_URL || "http://localhost:3000", // ✅ FIX
+    origin: process.env.CLIENT_URL || "http://localhost:3000",
     methods: ["GET", "POST"],
     credentials: true
   }
@@ -141,5 +156,7 @@ io.on("connection", (socket) => {
 
 httpServer.listen(
   PORT,
-  () => console.log(`Server running on port ${PORT}`) // ✅ FIX — hardcoded localhost text hata diya
+  () => console.log(`Server running on port ${PORT}`)
 );
+
+startReminderJob(); 

@@ -3,6 +3,8 @@ import { useNavigate, Link, Outlet, useLocation } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { setUser } from "../../Redux/UserSlice";
 import { message } from "antd";
+import axios from "axios"; // ✅ NEW
+import { API_URL } from "../../config"; // ✅ NEW
 import "../../styles/User.css";
 
 const navItems = [
@@ -21,9 +23,16 @@ const User = () => {
   const location = useLocation();
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
-  const logout = () => {
+  // ✅ UPDATED — localStorage.removeItem("token") cookie ko clear NAHI kar sakta
+  // (httpOnly cookie JS ki reach se bahar hai, yahi to iska security benefit hai).
+  // Cookie clear karne ke liye backend ka /logout endpoint hit karna zaroori hai.
+  const logout = async () => {
+    try {
+      await axios.post(`${API_URL}/user/api/v1/logout`);
+    } catch (error) {
+      console.error("Logout error:", error);
+    }
     dispatch(setUser(null));
-    localStorage.removeItem("token");
     navigate("/");
     message.success("Logged out successfully");
   };
