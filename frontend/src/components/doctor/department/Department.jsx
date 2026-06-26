@@ -10,22 +10,20 @@ const Department = () => {
   const [users, setUsers] = useState([]);
   const [selectedDoctor, setSelectedDoctor] = useState(null);
   const [modalOpen, setModelOpen] = useState(false);
-  const [loading, setLoading] = useState(true); 
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        
         const response = await axios.get(`${API_URL}/user/api/v1/getAllDoctors`)
         setUsers(response.data.data);
       } catch (error) {
         console.error('Error fetching data:', error);
-        message.error("Failed to load doctors list."); 
+        message.error("Failed to load doctors list.");
       } finally {
-        setLoading(false); // ✅ NEW
+        setLoading(false);
       }
     };
-
     fetchData();
   }, []);
 
@@ -41,48 +39,48 @@ const Department = () => {
 
   return (
     <div>
-      {loading ? ( // ✅ NEW — loading state
+      {loading ? (
         <div style={{ textAlign: 'center', padding: 40, color: '#6b7280' }}>
           <i className="fa-solid fa-spinner fa-spin" style={{ fontSize: 28, marginBottom: 12, display: 'block' }}></i>
           Loading doctors...
         </div>
       ) : (
-        <table className="user-table">
-          <thead>
-            <tr className='red-line'>
-              <th>#</th>
-              <th>Profile Pic</th>
-              <th>Name</th>
-              <th>Mobile</th>
-              <th>Email ID</th>
-              <th>Specialization</th>
-              <th>Action</th>
-            </tr>
-          </thead>
-          <tbody>
-            {users.length > 0 ? users.map((user, index) => (
-              <tr key={user._id || index} className={`${index % 2 === 0 ? "blue-line" : "black-line"}`}>
-                <td>{index + 1}</td>
-                <td><img src='https://png.pngtree.com/png-vector/20191130/ourmid/pngtree-doctor-icon-circle-png-image_2055257.jpg' alt={user.name} className="profile-pic" /></td>
-                <td>{user.name}</td>
-                <td>+91 {user.phone}</td>
-                <td>{user.email}</td>
-                <td>{user.specialization}</td>
-                <td><button className="action-button" onClick={() => openModal(user)}>View</button></td>
+        // ✅ FIX — wrapper div se table scroll hogi modal ke andar bhi
+        <div className="user-table-wrapper">
+          <table className="user-table" style={{ minWidth: 650 }}>
+            <thead>
+              <tr className='red-line'>
+                <th>#</th>
+                <th>Profile Pic</th>
+                <th>Name</th>
+                <th>Mobile</th>
+                <th>Email ID</th>
+                <th>Specialization</th>
+                <th>Action</th>
               </tr>
-            )) : <tr><td colSpan="7">No data</td></tr>}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {users.length > 0 ? users.map((user, index) => (
+                <tr key={user._id || index} className={`${index % 2 === 0 ? "blue-line" : "black-line"}`}>
+                  <td>{index + 1}</td>
+                  <td><img src='https://png.pngtree.com/png-vector/20191130/ourmid/pngtree-doctor-icon-circle-png-image_2055257.jpg' alt={user.name} className="profile-pic" /></td>
+                  <td>{user.name}</td>
+                  <td>+91 {user.phone}</td>
+                  <td>{user.email}</td>
+                  <td>{user.specialization}</td>
+                  <td><button className="action-button" onClick={() => openModal(user)}>View</button></td>
+                </tr>
+              )) : <tr><td colSpan="7">No data</td></tr>}
+            </tbody>
+          </table>
+        </div>
       )}
-      <Modal
-        show={modalOpen}
-        onHide={closeModal}
-      >
+
+      <Modal show={modalOpen} onHide={closeModal}>
         <Modal.Header style={{ backgroundColor: "blue", color: "white" }}>
           <h3>Doctor Information</h3>
           <div style={{ cursor: "pointer", fontSize: "20px", fontWeight: "bolder", color: "red" }} onClick={closeModal}>&times;</div>
         </Modal.Header>
-
         <Modal.Body>
           <DoctorModal doctor={selectedDoctor} />
         </Modal.Body>

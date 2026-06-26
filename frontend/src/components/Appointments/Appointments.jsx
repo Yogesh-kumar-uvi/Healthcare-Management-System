@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom'
 import axios from 'axios'
 import { Modal } from 'react-bootstrap'
 import { message } from 'antd'
-import { API_URL } from '../../config' // ✅ NEW import
+import { API_URL } from '../../config'
 import '../../styles/User.css'
 
 const Appointments = () => {
@@ -18,7 +18,7 @@ const Appointments = () => {
   const getAppointment = async () => {
     if (!user) { navigate("/"); return; }
     try {
-      const res = await axios.get(`${API_URL}/user/api/v1/getAllAppointments/${user.id}`); // ✅ FIX
+      const res = await axios.get(`${API_URL}/user/api/v1/getAllAppointments/${user.id}`);
       if (res.data.success && res.data.data) setDocto(res.data.data.reverse());
     } catch (e) {
       console.error("Error fetching appointments:", e);
@@ -43,7 +43,8 @@ const Appointments = () => {
         <div style={{ fontSize: 13, color: '#6b7280' }}>Total: {docto.length} appointment(s)</div>
       </div>
 
-      <div className="hc-card">
+      {/* ✅ FIX — hc-card ke bahar overflow wrapper rakha */}
+      <div className="hc-card" style={{ padding: 0, overflow: 'hidden' }}>
         {loading ? (
           <div style={{ textAlign: 'center', padding: 40, color: '#6b7280' }}>
             <i className="fa-solid fa-spinner fa-spin" style={{ fontSize: 28, marginBottom: 12, display: 'block' }}></i>
@@ -61,8 +62,9 @@ const Appointments = () => {
             }}>Find a Doctor</button>
           </div>
         ) : (
-          <div style={{ overflowX: 'auto' }}>
-            <table className="appt-table">
+          // ✅ FIX — scroll wrapper table ke directly upar
+          <div style={{ overflowX: 'auto', WebkitOverflowScrolling: 'touch', width: '100%' }}>
+            <table className="appt-table" style={{ minWidth: 600, marginBottom: 0 }}>
               <thead>
                 <tr>
                   <th>#</th>
@@ -172,4 +174,4 @@ const Appointments = () => {
   )
 }
 
-export default Appointments
+export default Appointments 
