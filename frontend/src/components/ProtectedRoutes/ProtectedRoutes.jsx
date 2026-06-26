@@ -4,7 +4,7 @@ import axios from 'axios'
 import { useSelector, useDispatch } from 'react-redux';
 import { hideLoading, showLoading } from '../../Redux/AlertSlice';
 import { setUser } from '../../Redux/UserSlice';
-import { API_URL } from '../../config'; // ✅ FIX
+import { API_URL } from '../../config';
 
 export default function ProtectedRoute({ children }) {
   const dispatch = useDispatch();
@@ -41,7 +41,7 @@ export default function ProtectedRoute({ children }) {
       }
     };
     getUser();
-  }, []);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   if (checking) return null;
   return authed ? children : <Navigate to="/" />;

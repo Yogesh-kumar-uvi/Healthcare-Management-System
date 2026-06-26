@@ -4,7 +4,7 @@ import axios from 'axios'
 import { useSelector, useDispatch } from 'react-redux';
 import { hideLoading, showLoading } from '../../Redux/AlertSlice';
 import { setDoctor } from '../../Redux/DoctorSlice';
-import { API_URL } from '../../config'; // ✅ FIX — hardcoded localhost:8081 hata diya
+import { API_URL } from '../../config';
 
 export default function ProtectedDoctorRoute({ children }) {
   const dispatch = useDispatch();
@@ -41,7 +41,7 @@ export default function ProtectedDoctorRoute({ children }) {
       }
     };
     getDoctor();
-  }, []);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   if (checking) return null;
   return authed ? children : <Navigate to="/" />;

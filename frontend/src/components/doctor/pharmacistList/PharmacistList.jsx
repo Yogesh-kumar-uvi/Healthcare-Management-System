@@ -9,33 +9,33 @@ const users = [
 
 const PharmacistList = () => {
   return (
-    <table className="user-table">
-      <thead>
-        <tr className='red-line'>
-          <th>Profile Pic</th>
-          <th>Name</th>
-          <th>Mobile</th>
-          <th>Email ID</th>
-          <th>Start Date</th>
-          <th>Action</th>
-        </tr>
-      </thead>
-      <tbody>
-        {users.map(user => (
-          <tr key={user.id} className={`${user.id%2===0 ? "blue-line":"black-line"}`}>
-          <td><img src="https://m.media-amazon.com/images/I/41Bl85OBHqL._AC_UF894,1000_QL80_.jpg" alt={user.name} className="profile-pic" /></td>
-            <td>{user.name}</td>
-            <td>{user.mobile}</td>
-            <td>{user.email}</td>
-            <td>{user.start_date}</td>
-            <td><button className="action-button" onClick={() => alert(`Clicked button for ${user.name}`)}>Click</button></td>
+    <div className="user-table-wrapper"> {/* ✅ FIX */}
+      <table className="user-table">
+        <thead>
+          <tr className='red-line'>
+            <th>Profile Pic</th>
+            <th>Name</th>
+            <th>Mobile</th>
+            <th>Email ID</th>
+            <th>Start Date</th>
+            <th>Action</th>
           </tr>
-        ))}
-      </tbody>
-    </table>
+        </thead>
+        <tbody>
+          {users.map(user => (
+            <tr key={user.id} className={`${user.id % 2 === 0 ? "blue-line" : "black-line"}`}>
+              <td><img src="https://m.media-amazon.com/images/I/41Bl85OBHqL._AC_UF894,1000_QL80_.jpg" alt={user.name} className="profile-pic" /></td>
+              <td>{user.name}</td>
+              <td>{user.mobile}</td>
+              <td>{user.email}</td>
+              <td>{user.start_date}</td>
+              <td><button className="action-button" onClick={() => alert(`Clicked button for ${user.name}`)}>Click</button></td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
   );
 };
-
-
 
 export default PharmacistList

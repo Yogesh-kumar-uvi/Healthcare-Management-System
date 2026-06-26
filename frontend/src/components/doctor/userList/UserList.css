@@ -203,3 +203,13 @@
     height: 26px;
   }
 }
+/* ✅ FIX — horizontal scroll wrapper, all screens */
+.user-table-wrapper {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.user-table {
+  min-width: 600px;
+}

@@ -792,3 +792,45 @@
     font-size: 11px;
   }
 }
+
+
+/* ══ HORIZONTAL SCROLL FIX — all screens ══════════════════════ */
+.appt-table-wrapper {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.appt-table {
+  min-width: 600px;
+}
+
+/* ══ SIDEBAR OVERLAY — mobile pe background click se band ho ══ */
+.sidebar-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  z-index: 99;
+}
+
+@media (max-width: 768px) {
+  .sidebar-overlay.active {
+    display: block;
+  }
+
+  body.sidebar-open {
+    overflow: hidden;
+  }
+}  
+
+/* ✅ FIX — appointments table horizontal scroll, all screens */
+.appt-table-wrapper {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.appt-table {
+  min-width: 600px;
+}
